@@ -12,3 +12,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # 假设你的主程序叫 main.cpp，生成的可执行文件叫 MyProgram
 add_executable(MyProgram main.cpp)
 
+enable_testing()
+add_test(NAME RunMyProgram COMMAND MyProgram)
