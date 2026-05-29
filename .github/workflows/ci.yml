@@ -1,0 +1,40 @@
+# 1. 这个自动化工作流（Workflow）的名字
+name: C++ CMake CI
+
+# 2. 触发条件：当有人向 main 分支 push 代码或提交 Pull Request 时触发
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# 3. 具体要干的任务
+jobs:
+  build-and-test:
+    # 告诉 GitHub 给你分配一台最新的 Ubuntu 虚拟服务器（Runner）
+    runs-on: ubuntu-latest
+
+    steps:
+    # 步骤一：把 GitHub 仓库里的代码拉取到这台虚拟服务器上
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 步骤二：给服务器安装 CMake 和编译环境
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential
+
+    # 步骤三：执行 CMake 配置和编译
+    - name: Configure and Build
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make -j$(nproc)  # 自动获取最大 CPU 核心数进行多线程编译
+
+    # 步骤四：运行测试
+    - name: Run Tests
+      run: |
+        cd build
+        ctest --output-on-failure
